@@ -39,12 +39,17 @@ labchecap_print_help()
 {
     echo "Labchecap docker:\n"
     echo "Options:"
-    echo "up        Levanta o ambiente."
-    echo "          [dev]           (Default) Levanta o ambiente de desenvlvimento"
-    echo "          [prod]          Levanta o ambiente de produção"
+    echo "up <nome>     Levanta o ambiente."
+    echo "              'dev'           (Default) Levanta o ambiente de desenvlvimento"
+    echo "              'prod'          Levanta o ambiente de produção"
     echo ""
-    echo "down      Derruba o ambiente."
-    echo "help      Mostra essa mensagem [default]"
+    echo "down          Derruba o ambiente."
+    echo ""
+    echo "env <nome>    Informa o .env do projeto."
+    echo "              'dev'           Carrega o env de desenvolvimento"
+    echo "              'prod'          Carrega o env de produção"
+    echo ""
+    echo "help          Mostra essa mensagem (default)"
 }
 
 # ------------ #
@@ -63,8 +68,18 @@ if [ "$command" = "up" ] && [ "$2" = "dev" ] || [ -z $2 ]; then
     exit 0
 fi
 
-if [ "$command" = "up" ] && [ "$2" = "prod" ]; then
+if [ $command = "up" ] && [ "$2" = "prod" ]; then
     labchecap_prod_up
+    exit 0
+fi
+
+if [ $command = "env" ] && [ "$2" = "dev" ]; then
+    labchecap_use_env "development"
+    exit 0
+fi
+
+if [ $command = "env" ] && [ "$2" = "prod" ]; then
+    labchecap_use_env "production"
     exit 0
 fi
 
