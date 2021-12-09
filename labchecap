@@ -5,7 +5,7 @@ labchecap_dev_up()
 {
     labchecap_use_env development
 
-    docker compose -f docker-compose-dev.yml up -d
+    docker-compose -f docker-compose-dev.yml up -d
 }
 
 # Levanta o ambiente de produção
@@ -77,13 +77,13 @@ fi
 
 if [ $command = "env" ] && [ "$2" = "dev" ]; then
     echo "Criado env de desnvolvimento...\n"
-    labchecap_use_env "development"
+    labchecap_use_env development
     exit 0
 fi
 
 if [ $command = "env" ] && [ "$2" = "prod" ]; then
     echo "Criado env de produção...\n"
-    labchecap_use_env "production"
+    labchecap_use_env production
     exit 0
 fi
 
