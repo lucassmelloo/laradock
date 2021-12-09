@@ -1,0 +1,78 @@
+#!/bin/sh
+
+# Levanta o ambiente de desesnvolvimento
+labchecap_dev_up()
+{
+    labchecap_use_env development
+
+    docker compose up -d -f docker-compose-dev.yml
+}
+
+# Levanta o ambiente de produção
+labchecap_prod_up()
+{
+    labchecap_use_env production
+
+    docker-compose up -d docker-compose-prod.yml
+}
+
+# Remove o .env e o substitui pelo novo .env
+labchecap_use_env()
+{
+    env_file_suffix=$1
+
+    # Se já existir um .env, remove.
+    if [ -f ".env" ]; then
+        rm .env
+    fi
+
+    # Copia o .env.* em um novo .env
+    cp ".env.$env_file_suffix" .env
+}
+
+labchecap_down()
+{
+    docker-compose down
+}
+
+labchecap_print_help()
+{
+    echo "Labchecap docker:\n"
+    echo "Options:"
+    echo "up        Levanta o ambiente."
+    echo "          [dev]           (Default) Levanta o ambiente de desenvlvimento"
+    echo "          [prod]          Levanta o ambiente de produção"
+    echo ""
+    echo "down      Derruba o ambiente."
+    echo "help      Mostra essa mensagem [default]"
+}
+
+# ------------ #
+# Script start #
+# ------------ #
+
+command=$1
+
+if [ -z $command ] || [ $command = "help" ]; then
+    labchecap_print_help
+    exit 0
+fi
+
+if [ "$command" = "up" ] && [ "$2" = "dev" ] || [ -z $2 ]; then
+    labchecap_dev_up
+    exit 0
+fi
+
+if [ "$command" = "up" ] && [ "$2" = "prod" ]; then
+    labchecap_prod_up
+    exit 0
+fi
+
+if [ "$command" = "down" ]; then
+    labchecap_down
+    exit 0
+fi
+
+echo "Comando não reconhecido."
+labchecap_print_help
+exit 1
