@@ -63,7 +63,7 @@ if [ -z $command ] || [ $command = "help" ]; then
     exit 0
 fi
 
-if [ "$command" = "up" ] && [ "$2" = "dev" ] || [ -z $2 ]; then
+if [ $command = "up" ] && ([ "$2" = "dev" ] || [ -z $2 ]); then
     echo "Subindo ambiente de desenvolvimento...\n"
     labchecap_dev_up
     exit 0
@@ -87,7 +87,7 @@ if [ $command = "env" ] && [ "$2" = "prod" ]; then
     exit 0
 fi
 
-if [ "$command" = "down" ]; then
+if [ $command = "down" ]; then
     echo "Derrubando ambiente...\n"
     labchecap_down
     exit 0
