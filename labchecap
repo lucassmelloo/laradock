@@ -64,26 +64,31 @@ if [ -z $command ] || [ $command = "help" ]; then
 fi
 
 if [ "$command" = "up" ] && [ "$2" = "dev" ] || [ -z $2 ]; then
+    echo "Subindo ambiente de desenvolvimento...\n"
     labchecap_dev_up
     exit 0
 fi
 
 if [ $command = "up" ] && [ "$2" = "prod" ]; then
+    echo "Subindo ambiente de produção...\n"
     labchecap_prod_up
     exit 0
 fi
 
 if [ $command = "env" ] && [ "$2" = "dev" ]; then
+    echo "Criado env de desnvolvimento...\n"
     labchecap_use_env "development"
     exit 0
 fi
 
 if [ $command = "env" ] && [ "$2" = "prod" ]; then
+    echo "Criado env de produção...\n"
     labchecap_use_env "production"
     exit 0
 fi
 
 if [ "$command" = "down" ]; then
+    echo "Derrubando ambiente...\n"
     labchecap_down
     exit 0
 fi
