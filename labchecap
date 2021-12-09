@@ -13,7 +13,7 @@ labchecap_prod_up()
 {
     labchecap_use_env production
 
-    docker-compose -f docker-compose-prod.yml  up -d
+    docker-compose -f docker-compose-prod.yml up -d
 }
 
 # Remove o .env e o substitui pelo novo .env
