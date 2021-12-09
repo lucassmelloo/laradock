@@ -5,7 +5,7 @@ labchecap_dev_up()
 {
     labchecap_use_env development
 
-    docker compose up -d -f docker-compose-dev.yml
+    docker compose up -f docker-compose-dev.yml -d
 }
 
 # Levanta o ambiente de produção
@@ -13,7 +13,7 @@ labchecap_prod_up()
 {
     labchecap_use_env production
 
-    docker-compose up -d docker-compose-prod.yml
+    docker-compose up -f docker-compose-prod.yml -d
 }
 
 # Remove o .env e o substitui pelo novo .env
