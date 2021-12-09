@@ -183,7 +183,7 @@ RUN if [ ${INSTALL_OCI8} = true ] && [ $(php -r "echo PHP_MAJOR_VERSION;") = "7"
   ln -s ${ORACLE_HOME}/sqlplus /usr/bin/sqlplus &&\
   ln -s /usr/lib/libnsl.so.2.0.0  /usr/lib/libnsl.so.1 && \
   ## Build OCI8 with PECL
-  echo "instantclient,${ORACLE_HOME}" | pecl install oci8 && \
+  echo "instantclient,${ORACLE_HOME}" | pecl install oci8-2.2.0 && \
   echo 'extension=oci8.so' > /etc/php7/conf.d/30-oci8.ini \
   #  Clean up
   apk del php7-pear php7-dev gcc musl-dev && \
