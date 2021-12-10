@@ -49,6 +49,8 @@ labchecap_print_help()
     echo "              'dev'           Carrega o env de desenvolvimento"
     echo "              'prod'          Carrega o env de produção"
     echo ""
+    echo "bash          Entra no terminal do workspace.\n"
+    echo "status        Exibe os containers ativos.\n"
     echo "help          Mostra essa mensagem (default)"
 }
 
@@ -90,6 +92,20 @@ fi
 if [ $command = "down" ]; then
     echo "Derrubando ambiente...\n"
     labchecap_down
+    exit 0
+fi
+
+if [ $command = "bash" ]; then
+    docker-compose exec -u laradock workspace bash
+    exit 0
+fi
+
+if [ $command = "status" ]; then
+    if [ -z $2 ]; then
+        docker-compose ps
+    else
+        docker-compose ps $2
+    fi
     exit 0
 fi
 
