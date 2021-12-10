@@ -1,2 +1,2 @@
 *.conf
-!laravel-horizon.conf
+!projetoapoio*
