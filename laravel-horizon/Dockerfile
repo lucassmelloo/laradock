@@ -281,6 +281,35 @@ RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
   php -m | grep -r 'memcached'; \
 fi
 
+#--------------------------------------------------------------------------
+# Clean up
+#--------------------------------------------------------------------------
+
+RUN rm /var/cache/apk/* \
+  && mkdir -p /var/www
+
+#
+#--------------------------------------------------------------------------
+# Optional Supervisord Configuration
+#--------------------------------------------------------------------------
+#
+# Modify the ./supervisor.conf file to match your App's requirements.
+# Make sure you rebuild your container with every change.
+#
+
+COPY supervisord.conf /etc/supervisord.conf
+
+ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
+
+#
+#--------------------------------------------------------------------------
+# Optional Software's Installation
+#--------------------------------------------------------------------------
+#
+# If you need to modify this image, feel free to do it right here.
+#
+# -- Your awesome modifications go here -- #
+
 ###########################################################################
 # PYTHON3:
 ###########################################################################
@@ -346,35 +375,6 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
         && docker-php-ext-enable \
                 oci8 \
   ;fi
-
-#--------------------------------------------------------------------------
-# Clean up
-#--------------------------------------------------------------------------
-
-RUN rm /var/cache/apk/* \
-  && mkdir -p /var/www
-
-#
-#--------------------------------------------------------------------------
-# Optional Supervisord Configuration
-#--------------------------------------------------------------------------
-#
-# Modify the ./supervisor.conf file to match your App's requirements.
-# Make sure you rebuild your container with every change.
-#
-
-COPY supervisord.conf /etc/supervisord.conf
-
-ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
-
-#
-#--------------------------------------------------------------------------
-# Optional Software's Installation
-#--------------------------------------------------------------------------
-#
-# If you need to modify this image, feel free to do it right here.
-#
-# -- Your awesome modifications go here -- #
 
 #
 #--------------------------------------------------------------------------
