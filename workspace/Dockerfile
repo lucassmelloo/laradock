@@ -932,6 +932,7 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
   else \
     echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8; \
   fi \
+  && php --ini \
   && echo "extension=oci8.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
   && php -m | grep -q 'oci8' \
 ;fi

@@ -604,7 +604,7 @@ ENV OCI_VERSION=19
 
 RUN if [ ${INSTALL_OCI8} = true ]; then \
     # Install wget
-    apt-get update && apt-get install --no-install-recommends -y wget \
+    apt-get install --no-install-recommends -yqq wget \
     # Install Oracle Instantclient
     && mkdir /opt/oracle \
         && cd /opt/oracle \
@@ -612,26 +612,30 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
         && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-sdk-linux.arm64-19.10.0.0.0dbru.zip \
         && unzip /opt/oracle/instantclient-basic-linux.arm64-19.10.0.0.0dbru.zip -d /opt/oracle \
         && unzip /opt/oracle/instantclient-sdk-linux.arm64-19.10.0.0.0dbru.zip -d /opt/oracle \
-        #&& ln -s /opt/oracle/instantclient_19_10/libclntsh.so.12.1 /opt/oracle/instantclient_19_10/libclntsh.so \
-        #&& ln -s /opt/oracle/instantclient_19_10/libclntshcore.so.12.1 /opt/oracle/instantclient_19_10/libclntshcore.so \
-        #&& ln -s /opt/oracle/instantclient_19_10/libocci.so.12.1 /opt/oracle/instantclient_19_10/libocci.so \
+        # && ln -s /opt/oracle/instantclient_19_10/libclntsh.so.12.1 /opt/oracle/instantclient_19_10/libclntsh.so \
+        # && ln -s /opt/oracle/instantclient_19_10/libclntshcore.so.12.1 /opt/oracle/instantclient_19_10/libclntshcore.so \
+        # && ln -s /opt/oracle/instantclient_19_10/libocci.so.12.1 /opt/oracle/instantclient_19_10/libocci.so \
         && rm -rf /opt/oracle/*.zip \
     # Install PHP extensions deps
-    && apt-get update \
-        && apt-get install --no-install-recommends -y \
-            libaio-dev && \
+    && apt-get install --no-install-recommends -yqq \
+      libaio-dev \
+      freetds-dev && \
     # Install PHP extensions
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
       echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8-2.0.12; \
     elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
       echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8-2.2.0; \
-    elif [ $(php -r "echo PHP_VERSION_ID - PHP_RELEASE_VERSION;") = "80000" ]; then \
+    elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ] && [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
       echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8-3.0.1; \
     else \
       echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8; \
     fi \
-    && echo "extension=oci8.so" >> /etc/php/${LARADOCK_PHP_VERSION}/cli/php.ini \
-    && php -m | grep -q 'oci8' \
+        && docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_19_10,19.10 \
+        && docker-php-ext-configure pdo_dblib --with-libdir=/lib/aarch64-linux-gnu \
+        && docker-php-ext-install \
+                pdo_oci \
+        && docker-php-ext-enable \
+                oci8 \
   ;fi
 
 ###########################################################################
