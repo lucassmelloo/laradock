@@ -324,14 +324,14 @@ RUN apk add --update nodejs npm
 # PHP OCI8:
 ###########################################################################
 
-ARG INSTALL_OCI8=true
-ARG ORACLE_INSTANT_CLIENT_MIRROR=https://github.com/diogomascarenha/oracle-instantclient/raw/master/
+ARG INSTALL_OCI8=false
+ARG ORACLE_INSTANT_CLIENT_MIRROR=https://github.com/ErickJMenezes/oracle-instantclient/raw/master/
 
-ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_12_1"
-ENV OCI_HOME="/opt/oracle/instantclient_12_1"
-ENV OCI_LIB_DIR="/opt/oracle/instantclient_12_1"
-ENV OCI_INCLUDE_DIR="/opt/oracle/instantclient_12_1/sdk/include"
-ENV OCI_VERSION=12
+ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_19_10"
+ENV OCI_HOME="/opt/oracle/instantclient_19_10"
+ENV OCI_LIB_DIR="/opt/oracle/instantclient_19_10"
+ENV OCI_INCLUDE_DIR="/opt/oracle/instantclient_19_10/sdk/include"
+ENV OCI_VERSION=19
 
 RUN if [ ${INSTALL_OCI8} = true ]; then \
     # Install wget
@@ -339,13 +339,14 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
     # Install Oracle Instantclient
     && mkdir /opt/oracle \
         && cd /opt/oracle \
-        && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-basic-linux.x64-12.1.0.2.0.zip \
-        && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-sdk-linux.x64-12.1.0.2.0.zip \
-        && unzip /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
-        && unzip /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
-        && ln -s /opt/oracle/instantclient_12_1/libclntsh.so.12.1 /opt/oracle/instantclient_12_1/libclntsh.so \
-        && ln -s /opt/oracle/instantclient_12_1/libclntshcore.so.12.1 /opt/oracle/instantclient_12_1/libclntshcore.so \
-        && ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so \
+        && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-basic-linux.arm64-19.10.0.0.0dbru.zip \
+        && wget ${ORACLE_INSTANT_CLIENT_MIRROR}instantclient-sdk-linux.arm64-19.10.0.0.0dbru.zip \
+        && ls -laF \
+        && unzip /opt/oracle/instantclient-basic-linux.arm64-19.10.0.0.0dbru.zip -d /opt/oracle \
+        && unzip /opt/oracle/instantclient-sdk-linux.arm64-19.10.0.0.0dbru.zip -d /opt/oracle \
+        #&& ln -s /opt/oracle/instantclient_19_10/libclntsh.so.12.1 /opt/oracle/instantclient_19_10/libclntsh.so \
+        #&& ln -s /opt/oracle/instantclient_19_10/libclntshcore.so.12.1 /opt/oracle/instantclient_19_10/libclntshcore.so \
+        #&& ln -s /opt/oracle/instantclient_19_10/libocci.so.12.1 /opt/oracle/instantclient_19_10/libocci.so \
         && rm -rf /opt/oracle/*.zip \
     # Install PHP extensions deps
   && apk add \
@@ -358,13 +359,13 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
   && ln -s /usr/lib/libnsl.so.2 /usr/lib/libnsl.so.1 \
   # Install PHP extensions
   &&  if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8-2.0.12; \
+      echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8-2.0.12; \
     elif [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ]; then \
-      echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8-2.2.0; \
+      echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8-2.2.0; \
     else \
-      echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8; \
+      echo 'instantclient,/opt/oracle/instantclient_19_10/' | pecl install oci8; \
     fi \
-        && docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1 \
+        && docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_19_10,19.10 \
         && docker-php-ext-configure pdo_dblib --with-libdir=lib \
         && docker-php-ext-install \
                 pdo_oci \
