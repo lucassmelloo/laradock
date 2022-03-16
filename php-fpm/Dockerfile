@@ -801,6 +801,9 @@ RUN if [ ${INSTALL_IMAGEMAGICK} = true ]; then \
     else \
       pecl install imagick; \
     fi && \
+    sed -i -e \
+        's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' \
+        /etc/ImageMagick-6/policy.xml && \
     docker-php-ext-enable imagick; \
     php -m | grep -q 'imagick' \
 ;fi
