@@ -111,9 +111,9 @@ RUN set -eux; \
     else \
       pecl install imagick; \
     fi && \
-  sed -i -e \
-      's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' \
-      /etc/ImageMagick-7/policy.xml && \
+    sed -i -e \
+        's/<policy domain="coder" rights="none" pattern="PDF" \/>/<policy domain="coder" rights="read|write" pattern="PDF" \/>/g' \
+        /etc/ImageMagick-7/policy.xml && \
     docker-php-ext-enable imagick; \
     php -m | grep -q 'imagick'; \
   fi
