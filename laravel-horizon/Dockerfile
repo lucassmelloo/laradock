@@ -327,7 +327,7 @@ RUN apk add --update nodejs npm
 # PHP OCI8:
 ###########################################################################
 
-ARG INSTALL_OCI8=false
+ARG INSTALL_OCI8=true
 ARG ORACLE_INSTANT_CLIENT_MIRROR=https://github.com/ErickJMenezes/oracle-instantclient/raw/master/
 
 ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_19_10"
@@ -347,6 +347,7 @@ RUN if [ ${INSTALL_OCI8} = true ]; then \
         && ls -laF \
         && unzip /opt/oracle/instantclient-basic-linux.arm64-19.10.0.0.0dbru.zip -d /opt/oracle \
         && unzip /opt/oracle/instantclient-sdk-linux.arm64-19.10.0.0.0dbru.zip -d /opt/oracle \
+        && ln -s /lib/libc.so.6 /usr/lib/libresolv.so.2 \
         #&& ln -s /opt/oracle/instantclient_19_10/libclntsh.so.12.1 /opt/oracle/instantclient_19_10/libclntsh.so \
         #&& ln -s /opt/oracle/instantclient_19_10/libclntshcore.so.12.1 /opt/oracle/instantclient_19_10/libclntshcore.so \
         #&& ln -s /opt/oracle/instantclient_19_10/libocci.so.12.1 /opt/oracle/instantclient_19_10/libocci.so \
