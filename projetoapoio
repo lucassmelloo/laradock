@@ -52,6 +52,8 @@ labchecap_print_help()
     echo ""
     echo "bash              Entra no terminal do workspace."
     echo ""
+    echo "horizon:terminate Reinicia a fila do laravel-horizon"
+    echo ""
     echo "status            Exibe os containers ativos."
     echo ""
     echo "logs <?serviço>   Exibe os logs de um serviço."
@@ -59,6 +61,18 @@ labchecap_print_help()
     echo "build <?serviço>  Reconstroi o container de um serviço."
     echo ""
     echo "help              Mostra essa mensagem (default)."
+}
+
+# Executa o bash do container do workspace
+labchecap_bash()
+{
+    docker-compose exec -u laradock workspace bash
+}
+
+# Reinicia a fila do laravel-horizon
+labchecap_horizon_terminate()
+{
+    docker-compose exec laravel-horizon php /var/www/projetoapoio/artisan horizon:terminate
 }
 
 # ------------ #
@@ -91,7 +105,10 @@ elif [ $command = "down" ]; then
     labchecap_down
     exit 0
 elif [ $command = "bash" ]; then
-    docker-compose exec -u laradock workspace bash
+    labchecap_bash
+    exit 0
+elif [ $command = "horizon:terminate" ]; then
+    labchecap_horizon_terminate
     exit 0
 elif [ $command = "status" ]; then
     docker-compose ps $2
