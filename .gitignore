@@ -23,5 +23,5 @@
 !/.devcontainer/docker-compose.extend-example.yml
 
 docker-compose.custom.yml
-
+~/.laradock/data/
 .DS_Store
