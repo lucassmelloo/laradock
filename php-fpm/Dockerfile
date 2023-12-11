@@ -217,15 +217,15 @@ RUN if [ ${INSTALL_XDEBUG} = true ]; then \
   # Install the xdebug extension
   # https://xdebug.org/docs/compat
   if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ] || { [ $(php -r "echo PHP_MAJOR_VERSION;") = "7" ] && { [ $(php -r "echo PHP_MINOR_VERSION;") = "4" ] || [ $(php -r "echo PHP_MINOR_VERSION;") = "3" ] ;} ;}; then \
-    pecl install xdebug-3.1.2; \
+    pecl install xdebug-3.0.4; \
   else \
     if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
-      pecl install xdebug-2.5.5; \
+      pecl install xdebug-3.0.4; \
     else \
       if [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
-        pecl install xdebug-2.9.0; \
+        pecl install xdebug-3.0.4; \
       else \
-        pecl install xdebug-2.9.8; \
+        pecl install xdebug-3.0.4; \
       fi \
     fi \
   fi && \
@@ -234,27 +234,41 @@ RUN if [ ${INSTALL_XDEBUG} = true ]; then \
 
 # Copy xdebug configuration for remote debugging
 COPY ./xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+# Criar o diretório de logs do Xdebug 
 
-RUN if [ $(php -r "echo PHP_MAJOR_VERSION;") = "8" ]; then \
-  sed -i "s/xdebug.remote_host=/xdebug.client_host=/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.remote_connect_back=0/xdebug.discover_client_host=false/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.remote_port=9000/xdebug.client_port=9003/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.profiler_enable=0/; xdebug.profiler_enable=0/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.profiler_output_dir=/xdebug.output_dir=/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.remote_mode=req/; xdebug.remote_mode=req/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.remote_autostart=0/xdebug.start_with_request=yes/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.remote_enable=0/xdebug.mode=debug/" /usr/local/etc/php/conf.d/xdebug.ini \
-;else \
-  sed -i "s/xdebug.remote_autostart=0/xdebug.remote_autostart=1/" /usr/local/etc/php/conf.d/xdebug.ini && \
-  sed -i "s/xdebug.remote_enable=0/xdebug.remote_enable=1/" /usr/local/etc/php/conf.d/xdebug.ini \
-;fi
-RUN sed -i "s/xdebug.cli_color=0/xdebug.cli_color=1/" /usr/local/etc/php/conf.d/xdebug.ini
+RUN mkdir -p /var/www/logs && chmod 777 /var/www/logs
+ 
+RUN apt update && apt install -y nano
 
+RUN echo "xdebug.mode=develop,coverage,debug,profile" > /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.idekey=docker" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.start_with_request=yes" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.log=/var/www/logs/xdebug.log" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.log_level=0" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.discover_client_host=false" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.output_dir=/var/www/logs" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.max_nesting_level=256" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.show_error_trace=1" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.show_exception_trace=1" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.collect_return=1" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.collect_params=3" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.var_display_max_depth=4" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.var_display_max_children=128" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.var_display_max_data=512" >> /usr/local/etc/php/conf.d/xdebug.ini && \
+    echo "xdebug.client_port=9001" >> /usr/local/etc/php/conf.d/xdebug.ini
+    #echo "xdebug.client_host=0.0.0.0" >> /usr/local/etc/php/conf.d/xdebug.ini \
+
+# Detectar IP do WSL e configurar para o Xdebug 
+RUN echo "Detectando IP do WSL para Xdebug..." && \
+    WSL_HOST_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}') && \
+    echo "xdebug.client_host=${WSL_HOST_IP}" >> /usr/local/etc/php/conf.d/xdebug.ini
 ###########################################################################
 # pcov:
 ###########################################################################
 
 USER root
+
+RUN 
 
 ARG INSTALL_PCOV=false
 
